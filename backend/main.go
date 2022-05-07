@@ -14,10 +14,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	godotenv.Load(".env")
+	godotenv.Load("../.env")
 	message := os.Getenv("SAMPLE_MESSAGE")
 	log.Println(message)
-	http.Handle("/", http.FileServer(http.Dir("frontend/build")))
+	http.Handle("/", http.FileServer(http.Dir("../frontend/build")))
 	http.ListenAndServe(":8080", nil)
 	// credentialFilePath := "./key.json"
 	// ctx := context.Background()
