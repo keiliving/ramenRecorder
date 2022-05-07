@@ -20,9 +20,9 @@ func (user *User) Upload(ctx context.Context) {
 		log.Fatal(err)
 	}
 
-	// TODO: move .env
-	bucketName := "ramen-recorder" // e.g. example-bucket
-	objectPath := "test.jpeg"      // e.g. foo/var/sample.txt
+	bucketName := os.Getenv("BUCKET_NAME")
+	// uuid にするとか
+	objectPath := "test.jpeg" // e.g. foo/var/sample.txt
 	writer := user.Client.Bucket(bucketName).Object(objectPath).NewWriter(ctx)
 	if _, err := io.Copy(writer, f); err != nil {
 		panic(err)
@@ -35,7 +35,7 @@ func (user *User) Upload(ctx context.Context) {
 }
 
 func (user *User) Get(ctx context.Context) {
-	bucketName := "ramen-recorder"           // e.g. example-bucket
+	bucketName := os.Getenv("BUCKET_NAME")
 	objectPath := "sample-object/sample.txt" // e.g. foo/var/sample.txt
 	obj := user.Client.Bucket(bucketName).Object(objectPath)
 	objName := obj.ObjectName()
@@ -50,7 +50,7 @@ func (user *User) Get(ctx context.Context) {
 }
 
 func (user *User) Delete(ctx context.Context) {
-	bucketName := "ramen-recorder"           // e.g. example-bucket
+	bucketName := os.Getenv("BUCKET_NAME")
 	objectPath := "sample-object/sample.txt" // e.g. foo/var/sample.txt
 	obj := user.Client.Bucket(bucketName).Object(objectPath)
 	objName := obj.ObjectName()
