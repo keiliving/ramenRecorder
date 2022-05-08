@@ -8,6 +8,7 @@ export const UploadForm: React.FC = () => {
         type="file"
         className="border-2 bg-slate-400"
         onChange={hundleUpload}
+        name="test"
       />
     </>
   );
@@ -17,6 +18,10 @@ const hundleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const files = e.currentTarget.files;
   if (files == null) return;
   const file = files[0];
-  const res = await fetch("/health", { method: "POST", body: file });
+
+  const res = await fetch("/upload", {
+    method: "POST",
+    body: file,
+  });
   console.log(res);
 };

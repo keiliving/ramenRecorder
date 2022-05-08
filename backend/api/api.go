@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"mime/multipart"
 	"os"
 
 	"cloud.google.com/go/storage"
@@ -13,13 +14,12 @@ type User struct {
 	Client *storage.Client
 }
 
-func (user *User) Upload(ctx context.Context) {
+func (user *User) Upload(f multipart.File,ctx context.Context) {
 	// mock file
-	f, err := os.Open("kasuga_yamagen.jpeg")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	// f, err := os.Open("kasuga_yamagen.jpeg")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	bucketName := os.Getenv("BUCKET_NAME")
 	// uuid にするとか
 	objectPath := "test.jpeg" // e.g. foo/var/sample.txt
