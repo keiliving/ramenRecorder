@@ -1,29 +1,29 @@
 import React from "react";
 
-export const UploadForm: React.FC = () => {
+const UploadForm: React.FC = () => {
   return (
-    <>
-      <div>ファイル</div>
+    <div className="fle">
+      <div className="text-center">keitaro-m のラーメン記録</div>
       <input
         type="file"
         className="border-2 bg-slate-400"
         onChange={hundleUpload}
-        name="test"
       />
-    </>
+    </div>
   );
 };
 
 const hundleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const formData = new FormData();
-
   const files = e.currentTarget.files;
   if (files == null) return;
   const file = files[0];
-  formData.append("userfile", file);
+  formData.append("file", file);
   const res = await fetch("/upload", {
     method: "POST",
     body: formData,
   });
   console.log(res);
 };
+
+export default UploadForm;

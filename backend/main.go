@@ -26,7 +26,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		// TODO: POST のみ受け付けるようにする。
 		log.Fatal("only POST")
 	}
-	file, header, e := r.FormFile("userfile");
+	file, header, e := r.FormFile("file")
 	if (e != nil) {
 		log.Fatal(e)
 	}
