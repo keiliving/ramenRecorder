@@ -19,7 +19,7 @@ type Entry struct {
 	Name string
 }
 
-func (user *User) Upload(e Entry,ctx context.Context) {
+func (user *User) Upload(e *Entry,ctx context.Context) {
 
 	bucketName := os.Getenv("BUCKET_NAME")
 	// uuid にするとか

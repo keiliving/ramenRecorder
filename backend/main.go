@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -13,8 +12,13 @@ import (
 	"google.golang.org/api/option"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "OK")
+func main() {
+	godotenv.Load("../.env")
+	message := os.Getenv("SAMPLE_MESSAGE")
+	log.Println(message)
+	http.Handle("/", http.FileServer(http.Dir("../frontend/build")))
+	http.HandleFunc("/upload", upload)
+	http.ListenAndServe(":8080", nil)
 }
 
 func upload(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +32,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	entry := api.Entry{File: file, Name: header.Filename}
+	entry := &api.Entry{File: file, Name: header.Filename}
 	credentialFilePath := "../key.json"
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
@@ -38,14 +42,4 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 	user := &api.User{Client: client}
 	user.Upload(entry, ctx)
-}
-
-func main() {
-	godotenv.Load("../.env")
-	message := os.Getenv("SAMPLE_MESSAGE")
-	log.Println(message)
-	http.Handle("/", http.FileServer(http.Dir("../frontend/build")))
-	http.HandleFunc("/health", handler)
-	http.HandleFunc("/upload", upload)
-	http.ListenAndServe(":8080", nil)
 }
