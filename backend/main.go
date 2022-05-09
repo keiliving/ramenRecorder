@@ -22,13 +22,14 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		// TODO: POST のみ受け付けるようにする。
 		log.Fatal("only POST")
 	}
-	file, _, e := r.FormFile("test");
+	file, header, e := r.FormFile("userfile");
 	if (e != nil) {
 		log.Fatal(e)
 	}
 	defer file.Close()
 
-	credentialFilePath := "./key.json"
+	entry := api.Entry{File: file, Name: header.Filename}
+	credentialFilePath := "../key.json"
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
 	if err != nil {
@@ -36,7 +37,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := &api.User{Client: client}
-	user.Upload(file, ctx)
+	user.Upload(entry, ctx)
 }
 
 func main() {

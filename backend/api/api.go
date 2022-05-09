@@ -14,17 +14,17 @@ type User struct {
 	Client *storage.Client
 }
 
-func (user *User) Upload(f multipart.File,ctx context.Context) {
-	// mock file
-	// f, err := os.Open("kasuga_yamagen.jpeg")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+type Entry struct {
+	File multipart.File
+	Name string
+}
+
+func (user *User) Upload(e Entry,ctx context.Context) {
+
 	bucketName := os.Getenv("BUCKET_NAME")
 	// uuid にするとか
-	objectPath := "test.jpeg" // e.g. foo/var/sample.txt
-	writer := user.Client.Bucket(bucketName).Object(objectPath).NewWriter(ctx)
-	if _, err := io.Copy(writer, f); err != nil {
+	writer := user.Client.Bucket(bucketName).Object(e.Name).NewWriter(ctx)
+	if _, err := io.Copy(writer, e.File); err != nil {
 		panic(err)
 	}
 
@@ -36,7 +36,7 @@ func (user *User) Upload(f multipart.File,ctx context.Context) {
 
 func (user *User) Get(ctx context.Context) {
 	bucketName := os.Getenv("BUCKET_NAME")
-	objectPath := "sample-object/sample.txt" // e.g. foo/var/sample.txt
+	objectPath := "aaa" // e.g. foo/var/sample.txt
 	obj := user.Client.Bucket(bucketName).Object(objectPath)
 	objName := obj.ObjectName()
 	rc, err := obj.NewReader(ctx)
