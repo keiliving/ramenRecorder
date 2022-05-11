@@ -18,10 +18,11 @@ func main() {
 	log.Println(message)
 	http.Handle("/", http.FileServer(http.Dir("../frontend/build")))
 	http.HandleFunc("/upload", upload)
+	http.HandleFunc("/images", getAll)
 	http.ListenAndServe(":8080", nil)
 }
 
-func upload(w http.ResponseWriter, r *http.Request) {
+func upload(w http.ResponseWriter, r *http.Request){
 	if  (r.Method != "POST") {
 		// TODO: POST のみ受け付けるようにする。
 		log.Fatal("only POST")
@@ -33,6 +34,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	entry := &api.Entry{File: file, Name: header.Filename}
+	// TODO: config
 	credentialFilePath := "../key.json"
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
@@ -42,4 +44,17 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 	user := &api.User{Client: client}
 	user.Upload(entry, ctx)
+}
+
+func getAll(w http.ResponseWriter, r *http.Request){
+	credentialFilePath := "../key.json"
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	user := &api.User{Client: client}
+	user.GetAll(&ctx)
+	
 }

@@ -2,12 +2,14 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
 	"os"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/iterator"
 )
 
 type User struct {
@@ -59,4 +61,21 @@ func (user *User) Delete(ctx context.Context) {
 	}
 
 	log.Println("delete succeeded!" + objName)
+}
+
+func (user *User) GetAll(ctx *context.Context) {
+	bucketName := os.Getenv("BUCKET_NAME")
+	backet := user.Client.Bucket(bucketName)
+	it := backet.Objects(*ctx, nil)
+
+	for {
+		objAttrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(objAttrs)
+	}
 }
