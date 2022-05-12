@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -20,7 +21,7 @@ type Entry struct {
 	File multipart.File
 	Name string
 }
-
+var Use = User{}
 func (user *User) Upload(e *Entry,ctx context.Context) {
 
 	bucketName := os.Getenv("BUCKET_NAME")
@@ -36,38 +37,36 @@ func (user *User) Upload(e *Entry,ctx context.Context) {
 	log.Println("upload succeeded!")
 }
 
-func (user *User) Get(ctx context.Context) {
+func (user *User) Get(name string, ctx context.Context) []byte{
 	bucketName := os.Getenv("BUCKET_NAME")
-	objectPath := "aaa" // e.g. foo/var/sample.txt
-	obj := user.Client.Bucket(bucketName).Object(objectPath)
-	objName := obj.ObjectName()
+	obj := user.Client.Bucket(bucketName).Object(name)
 	rc, err := obj.NewReader(ctx)
 	if err != nil {
 		panic(err)
 	}
-	if _, err := io.Copy(os.Stdout, rc); err != nil {
+
+	buf := new(bytes.Buffer)
+	if _, err := io.Copy(buf, rc); err != nil {
 		panic(err)
 	}
-	log.Println("get succeeded!" + objName)
+	ret := buf.Bytes()
+	return ret
 }
 
-func (user *User) Delete(ctx context.Context) {
+func (user *User) Delete(name string, ctx context.Context) {
 	bucketName := os.Getenv("BUCKET_NAME")
-	objectPath := "sample-object/sample.txt" // e.g. foo/var/sample.txt
-	obj := user.Client.Bucket(bucketName).Object(objectPath)
-	objName := obj.ObjectName()
+	obj := user.Client.Bucket(bucketName).Object(name)
 	if err := obj.Delete(ctx); err != nil {
 		panic(err)
 	}
-
-	log.Println("delete succeeded!" + objName)
 }
 
-func (user *User) GetAll(ctx *context.Context) {
+func (user *User) GetNames(ctx context.Context) []byte{
 	bucketName := os.Getenv("BUCKET_NAME")
 	backet := user.Client.Bucket(bucketName)
-	it := backet.Objects(*ctx, nil)
+	it := backet.Objects(ctx, nil)
 
+	var objNames []string
 	for {
 		objAttrs, err := it.Next()
 		if err == iterator.Done {
@@ -76,6 +75,19 @@ func (user *User) GetAll(ctx *context.Context) {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(objAttrs)
+		objNames = append(objNames,objAttrs.Name)
 	}
+	fmt.Println(objNames)
+	
+	rc, err := backet.Object(objNames[0]).NewReader(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	buf := new(bytes.Buffer)
+	if _, err := io.Copy(buf, rc); err != nil {
+		panic(err)
+	}
+	ret := buf.Bytes()
+	return ret
 }

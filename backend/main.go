@@ -14,11 +14,10 @@ import (
 
 func main() {
 	godotenv.Load("../.env")
-	message := os.Getenv("SAMPLE_MESSAGE")
-	log.Println(message)
+	log.Println("Waiting Requests ....")
 	http.Handle("/", http.FileServer(http.Dir("../frontend/build")))
 	http.HandleFunc("/upload", upload)
-	http.HandleFunc("/images", getAll)
+	http.HandleFunc("/images", getNames)
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -35,7 +34,7 @@ func upload(w http.ResponseWriter, r *http.Request){
 
 	entry := &api.Entry{File: file, Name: header.Filename}
 	// TODO: config
-	credentialFilePath := "../key.json"
+	credentialFilePath := os.Getenv("CREDENTIAL_FILEPATH")
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
 	if err != nil {
@@ -46,8 +45,29 @@ func upload(w http.ResponseWriter, r *http.Request){
 	user.Upload(entry, ctx)
 }
 
-func getAll(w http.ResponseWriter, r *http.Request){
-	credentialFilePath := "../key.json"
+func get(w http.ResponseWriter, r *http.Request){
+	credentialFilePath := os.Getenv("CREDENTIAL_FILEPATH")
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// 後で直す
+	objectName := r.Body.name
+
+	user := &api.User{Client: client}
+	f := user.Get(objectName, ctx)
+	if err != nil {
+		panic(err)
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Write(f)
+}
+
+func getNames(w http.ResponseWriter, r *http.Request){
+	credentialFilePath := os.Getenv("CREDENTIAL_FILEPATH")
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
 	if err != nil {
@@ -55,6 +75,11 @@ func getAll(w http.ResponseWriter, r *http.Request){
 	}
 
 	user := &api.User{Client: client}
-	user.GetAll(&ctx)
-	
+	f := user.GetNames(ctx)
+	if err != nil {
+		panic(err)
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Write(f)
 }
