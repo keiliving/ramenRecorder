@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -20,6 +21,7 @@ func main() {
 	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("../frontend/build")))).Methods("GET")
 	r.HandleFunc("/upload", upload).Methods("POST")
 	r.HandleFunc("/images", getNames).Methods("GET")
+	r.HandleFunc("/image", get).Methods("GET")
 	http.ListenAndServe(":8080", r)
 }
 
@@ -73,10 +75,11 @@ func getNames(w http.ResponseWriter, r *http.Request){
 
 	user := &api.User{Client: client}
 	f := user.GetNames(ctx)
+	body, err := json.Marshal(f)
 	if err != nil {
 		panic(err)
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "image/jpeg")
-	w.Write(f)
+	w.Write(body)
 }

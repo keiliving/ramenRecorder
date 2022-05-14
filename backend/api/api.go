@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
@@ -61,7 +60,7 @@ func (user *User) Delete(name string, ctx context.Context) {
 	}
 }
 
-func (user *User) GetNames(ctx context.Context) []byte{
+func (user *User) GetNames(ctx context.Context) []string{
 	bucketName := os.Getenv("BUCKET_NAME")
 	backet := user.Client.Bucket(bucketName)
 	it := backet.Objects(ctx, nil)
@@ -77,17 +76,5 @@ func (user *User) GetNames(ctx context.Context) []byte{
 		}
 		objNames = append(objNames,objAttrs.Name)
 	}
-	fmt.Println(objNames)
-	
-	rc, err := backet.Object(objNames[0]).NewReader(ctx)
-	if err != nil {
-		panic(err)
-	}
-
-	buf := new(bytes.Buffer)
-	if _, err := io.Copy(buf, rc); err != nil {
-		panic(err)
-	}
-	ret := buf.Bytes()
-	return ret
+	return objNames
 }
