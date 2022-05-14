@@ -17,8 +17,11 @@ import (
 func main() {
 	godotenv.Load("../.env")
 	log.Println("Waiting Requests ....")
-	r := mux.NewRouter()
-	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("../frontend/build")))).Methods("GET")
+	r := mux.NewRouter().StrictSlash(true)
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../frontend/build/static/"))))
+	r.PathPrefix("/home").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../frontend/build/index.html")
+})
 	r.HandleFunc("/upload", upload).Methods("POST")
 	r.HandleFunc("/images", getNames).Methods("GET")
 	r.HandleFunc("/image", get).Methods("GET")
@@ -63,6 +66,7 @@ func get(w http.ResponseWriter, r *http.Request){
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.Write(f)
+	log.Println("test")
 }
 
 func getNames(w http.ResponseWriter, r *http.Request){

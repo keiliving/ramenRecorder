@@ -24,6 +24,8 @@ const hundleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     body: formData,
   });
   console.log(res);
+  const res2 = await fetch("/images");
+  console.log(res2);
 };
 
 export default UploadForm;
