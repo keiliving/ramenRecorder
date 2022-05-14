@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"cloud.google.com/go/storage"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/keiliving/ramenRecorder/backend/api"
 	"google.golang.org/api/option"
@@ -15,17 +16,14 @@ import (
 func main() {
 	godotenv.Load("../.env")
 	log.Println("Waiting Requests ....")
-	http.Handle("/", http.FileServer(http.Dir("../frontend/build")))
-	http.HandleFunc("/upload", upload)
-	http.HandleFunc("/images", getNames)
-	http.ListenAndServe(":8080", nil)
+	r := mux.NewRouter()
+	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("../frontend/build")))).Methods("GET")
+	r.HandleFunc("/upload", upload).Methods("POST")
+	r.HandleFunc("/images", getNames).Methods("GET")
+	http.ListenAndServe(":8080", r)
 }
 
 func upload(w http.ResponseWriter, r *http.Request){
-	if  (r.Method != "POST") {
-		// TODO: POST のみ受け付けるようにする。
-		log.Fatal("only POST")
-	}
 	file, header, e := r.FormFile("file")
 	if (e != nil) {
 		log.Fatal(e)
@@ -53,8 +51,7 @@ func get(w http.ResponseWriter, r *http.Request){
 		log.Fatal(err)
 	}
 
-	// 後で直す
-	objectName := r.Body.name
+	objectName := r.URL.Query().Get("name")
 
 	user := &api.User{Client: client}
 	f := user.Get(objectName, ctx)
