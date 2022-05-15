@@ -18,10 +18,11 @@ func main() {
 	godotenv.Load("../.env")
 	log.Println("Waiting Requests ....")
 	r := mux.NewRouter().StrictSlash(true)
+	r.PathPrefix("/home").HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			http.ServeFile(w, r, "../frontend/build/index.html")
+	})
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../frontend/build/static/"))))
-	r.PathPrefix("/home").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../frontend/build/index.html")
-})
 	r.HandleFunc("/upload", upload).Methods("POST")
 	r.HandleFunc("/images", getNames).Methods("GET")
 	r.HandleFunc("/image", get).Methods("GET")
