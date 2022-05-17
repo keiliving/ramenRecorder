@@ -21,17 +21,16 @@ type Entry struct {
 	Name string
 }
 var Use = User{}
-func (user *User) Upload(e *Entry,ctx context.Context) {
 
+func (user *User) Upload(e *Entry,ctx context.Context) {
 	bucketName := os.Getenv("BUCKET_NAME")
-	// uuid にするとか
 	writer := user.Client.Bucket(bucketName).Object(e.Name).NewWriter(ctx)
 	if _, err := io.Copy(writer, e.File); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	if err := writer.Close(); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	log.Println("upload succeeded!")
 }
@@ -41,12 +40,12 @@ func (user *User) Get(name string, ctx context.Context) []byte{
 	obj := user.Client.Bucket(bucketName).Object(name)
 	rc, err := obj.NewReader(ctx)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	buf := new(bytes.Buffer)
 	if _, err := io.Copy(buf, rc); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	ret := buf.Bytes()
 	return ret
@@ -56,7 +55,7 @@ func (user *User) Delete(name string, ctx context.Context) {
 	bucketName := os.Getenv("BUCKET_NAME")
 	obj := user.Client.Bucket(bucketName).Object(name)
 	if err := obj.Delete(ctx); err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }
 
@@ -72,7 +71,7 @@ func (user *User) GetNames(ctx context.Context) []string{
 			break
 		}
 		if err != nil {
-			panic(err)
+			log.Println(err)
 		}
 		objNames = append(objNames,objAttrs.Name)
 	}

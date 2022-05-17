@@ -1,38 +1,37 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Image from "./image";
 
 // レンダリング時 GET /images
 // Image コンポーネント作成し、 GET /image?name="hoge" する。
 
 const ImageCollection: React.FC = () => {
+  const [imageNames, setImageNames] = useState<string[]>([]);
   useEffect(() => {
-    a();
-    console.log("render");
-  });
+    (async function () {
+      const res = await fetch("/images");
+      setImageNames(await res.json());
+    })();
+  }, []);
 
-  const a = async () => {
-    const res = await fetch("/images");
-    console.log(res);
-  };
   return (
     <div className="w-11/12">
       <div className="text-center">title</div>
       <div className="flex flex-wrap justify-center">
-        <div className="m-10 h-32 w-32 bg-red-500"></div>
-        <div className="m-10 h-32 w-32 bg-blue-500"></div>
-        <div className="m-10 h-32 w-32 bg-red-500"></div>
-        <div className="m-10 h-32 w-32 bg-blue-500"></div>
-        <div className="m-10 h-32 w-32 bg-red-500"></div>
-        <div className="m-10 h-32 w-32 bg-blue-500"></div>
-        <div className="m-10 h-32 w-32 bg-red-500"></div>
-        <div className="m-10 h-32 w-32 bg-blue-500"></div>
-        <div className="m-10 h-32 w-32 bg-red-500"></div>
-        <div className="m-10 h-32 w-32 bg-blue-500"></div>
-        <div className="m-10 h-32 w-32 bg-red-500"></div>
-        <div className="m-10 h-32 w-32 bg-blue-500"></div>
-        <div className="m-10 h-32 w-32 bg-red-500"></div>
-        <div className="m-10 h-32 w-32 bg-blue-500"></div>
-        <div className="m-10 h-32 w-32 bg-red-500"></div>
-        <div className="m-10 h-32 w-32 bg-blue-500"></div>
+        {imageNames.map((imageName, i) => (
+          <div key={i}>aaa</div>
+        ))}
+        <Image />
+        <Image />
+        <Image />
+        <Image />
+        <Image />
+        <Image />
+        <Image />
+        <Image />
+        <Image />
+        <Image />
+        <Image />
+        <Image />
       </div>
     </div>
   );
