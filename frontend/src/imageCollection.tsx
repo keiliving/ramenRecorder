@@ -5,11 +5,13 @@ import Image from "./image";
 // Image コンポーネント作成し、 GET /image?name="hoge" する。
 
 const ImageCollection: React.FC = () => {
-  const [imageNames, setImageNames] = useState<string[]>([]);
+  const [imageAttrs, setImageAttrs] = useState<string[]>([]);
   useEffect(() => {
     (async function () {
       const res = await fetch("/images");
-      setImageNames(await res.json());
+      const json = await res.json();
+      setImageAttrs(json);
+      console.log(json);
     })();
   }, []);
 
@@ -17,9 +19,10 @@ const ImageCollection: React.FC = () => {
     <div className="w-11/12">
       <div className="text-center">title</div>
       <div className="flex flex-wrap justify-center">
-        {imageNames.map((imageName, i) => (
-          <div key={i}>aaa</div>
+        {imageAttrs.map((imageAttr) => (
+          <Image name={imageAttr} key={imageAttr} />
         ))}
+        {/* <Image />
         <Image />
         <Image />
         <Image />
@@ -30,8 +33,7 @@ const ImageCollection: React.FC = () => {
         <Image />
         <Image />
         <Image />
-        <Image />
-        <Image />
+        <Image /> */}
       </div>
     </div>
   );

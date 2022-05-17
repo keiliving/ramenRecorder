@@ -59,7 +59,7 @@ func (user *User) Delete(name string, ctx context.Context) {
 	}
 }
 
-func (user *User) GetNames(ctx context.Context) []string{
+func (user *User) Ls(ctx context.Context) []string{
 	bucketName := os.Getenv("BUCKET_NAME")
 	backet := user.Client.Bucket(bucketName)
 	it := backet.Objects(ctx, nil)
@@ -73,7 +73,7 @@ func (user *User) GetNames(ctx context.Context) []string{
 		if err != nil {
 			log.Println(err)
 		}
-		objNames = append(objNames,objAttrs.Name)
+		objNames = append(objNames, objAttrs.Name)
 	}
 	return objNames
 }

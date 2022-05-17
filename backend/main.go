@@ -27,7 +27,7 @@ func main() {
 	})
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../frontend/build/static/"))))
 	r.HandleFunc("/upload", upload).Methods("POST")
-	r.HandleFunc("/images", getNames).Methods("GET")
+	r.HandleFunc("/images", ls).Methods("GET")
 	r.HandleFunc("/image", get).Methods("GET")
 	http.ListenAndServe(":8080", r)
 }
@@ -73,7 +73,7 @@ func get(w http.ResponseWriter, r *http.Request){
 	w.Write(f)
 }
 
-func getNames(w http.ResponseWriter, r *http.Request){
+func ls(w http.ResponseWriter, r *http.Request){
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialFilePath))
 	if err != nil {
@@ -81,7 +81,7 @@ func getNames(w http.ResponseWriter, r *http.Request){
 	}
 
 	user := &api.User{Client: client}
-	f := user.GetNames(ctx)
+	f := user.Ls(ctx)
 	body, err := json.Marshal(f)
 	if err != nil {
 		log.Println(err)
@@ -89,4 +89,5 @@ func getNames(w http.ResponseWriter, r *http.Request){
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
+	log.Println(body)
 }
