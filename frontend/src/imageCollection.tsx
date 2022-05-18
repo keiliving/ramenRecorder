@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "./image";
 
-// レンダリング時 GET /images
-// Image コンポーネント作成し、 GET /image?name="hoge" する。
+// アップロード時の更新と共にレンダリングの最適化を行う。
 
 const ImageCollection: React.FC = () => {
   const [imageAttrs, setImageAttrs] = useState<string[]>([]);
@@ -18,7 +17,7 @@ const ImageCollection: React.FC = () => {
   return (
     <div className="w-11/12">
       <div className="text-center">title</div>
-      <div className="flex flex-wrap justify-center space-x-9 space-y-9">
+      <div className="flex flex-wrap justify-center">
         {imageAttrs.map((imageAttr) => (
           <Image name={imageAttr} key={imageAttr} />
         ))}
