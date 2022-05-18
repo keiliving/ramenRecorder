@@ -59,6 +59,9 @@ func (user *User) Delete(name string, ctx context.Context) {
 	}
 }
 
+
+// Fixme: use listing object 
+// https://pkg.go.dev/cloud.google.com/go/storage#hdr-Listing_objects
 func (user *User) Ls(ctx context.Context) []string{
 	bucketName := os.Getenv("BUCKET_NAME")
 	backet := user.Client.Bucket(bucketName)

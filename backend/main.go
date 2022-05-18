@@ -19,7 +19,7 @@ var credentialFilePath string
 func main() {
 	godotenv.Load("../.env")
 	log.Println("Waiting Requests ....")
-	configureEnv() 
+	configureEnv()
 	r := mux.NewRouter().StrictSlash(true)
 	r.PathPrefix("/home").HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -89,5 +89,4 @@ func ls(w http.ResponseWriter, r *http.Request){
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
-	log.Println(body)
 }

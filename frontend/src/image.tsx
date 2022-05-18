@@ -1,27 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 const Image: React.FC<{ name: string }> = ({ name }) => {
+  const [objectURL, setobjectURL] = useState<string>();
   useEffect(() => {
     (async function () {
       const res = await fetch(`/image?name=${name}`);
-      console.log(res);
+      if (res.body == null) {
+        return;
+      }
+      const reader = res.body.getReader();
+      const stream = new ReadableStream({
+        start(controller) {
+          return (function pump(): void | PromiseLike<void> {
+            return reader.read().then(({ done, value }) => {
+              if (done) return controller.close();
+              controller.enqueue(value);
+              return pump();
+            });
+          })();
+        },
+      });
+      const data = await new Response(stream).blob();
+      const objectURL = URL.createObjectURL(data);
+      setobjectURL(objectURL);
     })();
 
     return () => {
-      // 現状ない
-      console.log("アンマウントされた");
+      if (objectURL) URL.revokeObjectURL(objectURL);
     };
   }, []);
 
   return (
-    <span className="flex flex-col items-center">
+    <span className="flex w-2/6 flex-col items-center">
       <div className="text-center">{name}</div>
-      {/* サムネイルに置き換える。fech するからこれもコンポーネント化した方がよさそう
-      <image></image> */}
-      <div
-        className="m-10 h-32 w-32 bg-red-500"
-        onClick={() => console.log("clicked")}
-      ></div>
+      <img src={objectURL}></img>
     </span>
   );
 };
