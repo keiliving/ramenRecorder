@@ -31,9 +31,11 @@ const Image: React.FC<{ name: string }> = ({ name }) => {
   }, []);
 
   return (
-    <span className="m-9 flex w-2/6 max-w-xs flex-col items-center">
-      <div className="text-center">{name}</div>
-      <img src={objectURL}></img>
+    <span className="pb-1/3 relative m-9 flex w-2/6 max-w-xs flex-col items-center">
+      <img
+        className="absolute h-full w-full object-cover"
+        src={objectURL}
+      ></img>
     </span>
   );
 };
