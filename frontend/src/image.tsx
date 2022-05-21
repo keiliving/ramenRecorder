@@ -31,7 +31,7 @@ const Image: React.FC<{ name: string }> = ({ name }) => {
   }, []);
 
   return (
-    <span className="pb-1/3 relative m-9 flex w-2/6 max-w-xs flex-col items-center">
+    <span className="pb-1/4 relative m-1 flex w-1/4 max-w-xs flex-col items-center">
       <img
         className="absolute h-full w-full object-cover"
         src={objectURL}

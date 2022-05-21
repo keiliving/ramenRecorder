@@ -17,7 +17,7 @@ const ImageCollection: React.FC = () => {
   return (
     <div className="w-11/12">
       <div className="text-center">title</div>
-      <div className="flex flex-wrap justify-center">
+      <div className="flex flex-wrap justify-around">
         {imageAttrs.map((imageAttr) => (
           <Image name={imageAttr} key={imageAttr} />
         ))}

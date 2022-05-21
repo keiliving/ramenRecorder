@@ -1,6 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.pb-1\/3 {
-  padding-bottom: 33%;
+.pb-1\/4 {
+  padding-bottom: 25%;
 }

@@ -7,12 +7,13 @@ const UploadForm: React.FC = () => {
       <input
         type="file"
         className="border-2 bg-slate-400"
-        onChange={hundleUpload}
+        // onChange={hundleUpload}
       />
     </div>
   );
 };
 
+/* eslint-disable no-unused-vars */
 const hundleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const formData = new FormData();
   const files = e.currentTarget.files;
